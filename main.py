@@ -1,6 +1,5 @@
 import pygame
 import sys
-from startup import bg_sprite
 
 
 # Initialised the pygame library
@@ -12,6 +11,10 @@ screen_width, screen_height = 240, 160
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 
+player_sprite = 
+
+
+
 running = True
 
 while running:
@@ -21,7 +24,7 @@ while running:
             running = False
             
 
-    screen.blit(bg_sprite)
+    
 
     pygame.display.flip()
     
