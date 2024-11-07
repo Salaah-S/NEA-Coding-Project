@@ -1,5 +1,6 @@
 import pygame
 import sys
+import player
 
 
 # Initialised the pygame library
@@ -11,61 +12,40 @@ screen_width, screen_height = 537, 358
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
-class Spritesheet:
-    def __init__(self, filename):
-        
-        self.filename = filename
-        self.sprite_sheet = pygame.image.load(filename).convert_alpha()
+user = player.Character('red', 'boy',"assests/red_walking.png" )
+user_frame = user.idle()
 
-    def get_sprite(self, x, y, w, h):
-        sprite = pygame.Surface((w,h))
-        sprite.set_colorkey((255,255,255))
-        sprite.blit(self.sprite_sheet, (0,0), (x,y,w,h))
-        return sprite
+x, y = 100,100
+speed = 8
 
-my_spritesheet = Spritesheet('assests/red_walking.png')
-trainer_1 = pygame.transform.scale(my_spritesheet.get_sprite(16,0,16,32), (48,96))
-# The transform.scale is used to make the character bigger, so that it is visible
-
-player_x, player_y = 240,160
-speed = 250  # Pixels per second
-
-# Create a clock object to control the frame rate
+# To control the frame rate
 clock = pygame.time.Clock()
 
 
 running = True
-
 while running:
+    screen.fill("grey")
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            
 
-    # Calculate time passed since last frame
-    delta_time = clock.tick(60) / 1000.0 
-
-    # Get the state of all keys
     keys = pygame.key.get_pressed()
 
-    # delta_time for consistent speed
-    if keys[pygame.K_LEFT]:
-        player_x -= speed * delta_time
-    if keys[pygame.K_RIGHT]:
-        player_x += speed * delta_time
-    if keys[pygame.K_UP]:
-        player_y -= speed * delta_time
     if keys[pygame.K_DOWN]:
-        player_y += speed * delta_time
+        user_frame, x, y = user.walking('down', x, y, speed)
+    elif keys[pygame.K_UP]:
+        user_frame, x, y = user.walking('up', x, y, speed)
+    elif keys[pygame.K_LEFT]:
+        user_frame, x, y = user.walking('left', x, y, speed)
+    elif keys[pygame.K_RIGHT]:
+        user_frame, x, y = user.walking('right', x, y, speed)
 
-
-    screen.fill("grey")
-    screen.blit(trainer_1, (player_x,player_y))
-
+    screen.blit(user_frame, (x,y))
+  
     pygame.display.flip()
     
-
+    clock.tick(30)
 
 
 pygame.quit()
