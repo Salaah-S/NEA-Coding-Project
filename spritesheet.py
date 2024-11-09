@@ -1,12 +1,14 @@
 import pygame
 
 class Spritesheet:
-    def __init__(self, filename):
-        
-        # This allows the class to turn the spritesheet into the dimensions that the window might be changed into
-        self.filename = filename
-        self.sprite_sheet = pygame.image.load(filename).convert()
+    def __init__(self, image):
+        self.sheet = pygame.image.load(image).convert_alpha()
 
-    def get_sprite(self, x, y, w, h):
-        sprite = pygame.Suface((w,h))
-        sprite.set_colorkey()
+    def get_sprite(self, frame, width, height, scale):
+        sprite = pygame.Surface((width, height)).convert_alpha()
+        sprite.blit(self.sheet, (0,0), ((frame * width), 0, width, height))
+        sprite = pygame.transform.scale(sprite, ((width * scale), (height* scale)))
+        sprite.set_colorkey((255,255,255))
+
+        return sprite
+    
