@@ -45,7 +45,7 @@ while running:
   
     pygame.display.flip()
     
-    clock.tick(30)
+    clock.tick(20)
 
 
 pygame.quit()

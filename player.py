@@ -20,12 +20,12 @@ class Character:
             animation_list = []
             for i in range(3):
                 animation_list.append(sprite.get_sprite(i, 16,32,3))
-            
-            current_frame = 1
+            animation_list.append(sprite.get_sprite(1, 16,32,3))
+
             now = animation_list[self.current_frame]
             y += speed
             self.current_frame +=1
-            if self.current_frame == 3:
+            if self.current_frame == 4:
                 self.current_frame = 0
 
 
@@ -34,12 +34,12 @@ class Character:
             animation_list = []
             for i in range(3):
                 animation_list.append(sprite.get_sprite((i+3), 16,32,3))
-            
-            current_frame = 1
+            animation_list.append(sprite.get_sprite(3, 16,32,3))
+
             now = animation_list[self.current_frame]
             y -= speed
             self.current_frame +=1
-            if self.current_frame == 3:
+            if self.current_frame == 4:
                 self.current_frame = 0
 
 
@@ -48,12 +48,12 @@ class Character:
             animation_list = []
             for i in range(3):
                 animation_list.append(sprite.get_sprite((i+6), 16,32,3))
-            
-            current_frame = 1
+            animation_list.append(sprite.get_sprite(6, 16,32,3)) 
+
             now = animation_list[self.current_frame]
             x -= speed
             self.current_frame +=1
-            if self.current_frame == 3:
+            if self.current_frame == 4:
                 self.current_frame = 0
 
         elif direction == 'right':
@@ -61,12 +61,13 @@ class Character:
             animation_list = []
             for i in range(3):
                 animation_list.append(sprite.get_sprite((i+9), 16,32,3))
-            
-            current_frame = 1
+            animation_list.append(sprite.get_sprite(9, 16,32,3))            
+
             now = animation_list[self.current_frame]
             x += speed
             self.current_frame +=1
-            if self.current_frame == 3:
+            if self.current_frame == 4:
                 self.current_frame = 0
-        
+
         return now, x, y
+    
