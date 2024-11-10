@@ -7,13 +7,14 @@ import player
 pygame.init()
 
 # Defining the screen width and height
-screen_width, screen_height = 537, 358
+screen_width, screen_height = 600, 400
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
-user = player.Character('red', 'boy',"assests/red_walking.png" )
-user_frame = user.idle()
+user = player.Character('red', 'boy',"assests/red_walking.png", screen_width, screen_height)
+previous = 0
+user_frame = user.idle(previous)
 
 x, y = 100,100
 speed = 8
@@ -31,20 +32,15 @@ while running:
             running = False
 
     keys = pygame.key.get_pressed()
+    
+    user_frame, x, y, previous = user.walking(keys, x, y, speed, previous)
 
-    if keys[pygame.K_DOWN]:
-        user_frame, x, y = user.walking('down', x, y, speed)
-    elif keys[pygame.K_UP]:
-        user_frame, x, y = user.walking('up', x, y, speed)
-    elif keys[pygame.K_LEFT]:
-        user_frame, x, y = user.walking('left', x, y, speed)
-    elif keys[pygame.K_RIGHT]:
-        user_frame, x, y = user.walking('right', x, y, speed)
 
     screen.blit(user_frame, (x,y))
-  
+
+
     pygame.display.flip()
-    
+
     clock.tick(20)
 
 
