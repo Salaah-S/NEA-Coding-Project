@@ -20,7 +20,7 @@ class Character():
             0:1
         }
 
-        return sprite.get_sprite(keys.get(key), 16,20,3)
+        return sprite.get_sprite(keys.get(key), 16,22,3)
 
 
     def walking(self, direction, x, y, speed, previous):
@@ -30,14 +30,14 @@ class Character():
             
             animation_list = []
             for i in range(3):
-                animation_list.append(sprite.get_sprite(i, 16,20,3))
-            idle_frame = sprite.get_sprite(1, 16,20,3)
+                animation_list.append(sprite.get_sprite(i, 16,22,3))
+            idle_frame = sprite.get_sprite(1, 16,22,3)
             animation_list.append(idle_frame)
 
             now = animation_list[self.current_frame]
             y += speed
-            if y > self.screen_height - 20-speed:
-                y = self.screen_height - 20
+            if y > self.screen_height - 22:
+                y = self.screen_height - 22
             self.current_frame +=1
             if self.current_frame == 4:
                 self.current_frame = 0
@@ -48,8 +48,8 @@ class Character():
         
             animation_list = []
             for i in range(3):
-                animation_list.append(sprite.get_sprite((i+3), 16,20,3))
-            idle_frame = sprite.get_sprite(4, 16,20,3)
+                animation_list.append(sprite.get_sprite((i+3), 16,22,3))
+            idle_frame = sprite.get_sprite(4, 16,22,3)
             animation_list.append(idle_frame)
 
             now = animation_list[self.current_frame]
@@ -66,8 +66,8 @@ class Character():
         
             animation_list = []
             for i in range(3):
-                animation_list.append(sprite.get_sprite((i+6), 16,20,3))
-            idle_frame = sprite.get_sprite(7, 16,20,3)
+                animation_list.append(sprite.get_sprite((i+6), 16,22,3))
+            idle_frame = sprite.get_sprite(7, 16,22,3)
             animation_list.append(idle_frame)
 
             now = animation_list[self.current_frame]
@@ -84,13 +84,13 @@ class Character():
         
             animation_list = []
             for i in range(3):
-                animation_list.append(sprite.get_sprite((i+9), 16,20,3))
-            idle_frame = sprite.get_sprite(10, 16,20,3)
+                animation_list.append(sprite.get_sprite((i+9), 16,22,3))
+            idle_frame = sprite.get_sprite(10, 16,22,3)
             animation_list.append(idle_frame)            
 
             now = animation_list[self.current_frame]
             x += speed
-            if x > self.screen_width - 16-speed:
+            if x > self.screen_width - 16:
                 x = self.screen_width - 16
             self.current_frame +=1
             if self.current_frame == 4:

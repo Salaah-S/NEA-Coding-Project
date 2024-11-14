@@ -7,12 +7,12 @@ import player
 pygame.init()
 
 # Defining the screen width and height
-screen_width, screen_height = 600, 400
+screen_width, screen_height = 759, 506
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
-user = player.Character('red', 'boy',"assests/red_walking.png", screen_width, screen_height)
+user = player.Character('red', 'boy',"assests/gary.png", screen_width, screen_height)
 previous = 0
 user_frame = user.idle(previous)
 
