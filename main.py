@@ -7,14 +7,18 @@ import player
 pygame.init()
 
 # Defining the screen width and height
-screen_width, screen_height = 759, 506
+screen_width, screen_height = 768, 506
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
-user = player.Character('red', 'boy',"assests/gary.png", screen_width, screen_height)
+# The user controlled character
+user = player.Character('red', 'boy',"assests/red_walking.png", screen_width, screen_height)
 previous = 0
 user_frame = user.idle(previous)
+
+object = player.Character('green', 'girl', 'assests/green_walking.png', screen_width, screen_height)
+object.frame = object.idle(previous)
 
 x, y = 100,100
 speed = 8
@@ -37,6 +41,7 @@ while running:
 
 
     screen.blit(user_frame, (x,y))
+    screen.blit(object.frame, (200, 200))
 
 
     pygame.display.flip()
