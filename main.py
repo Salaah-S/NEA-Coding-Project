@@ -11,17 +11,14 @@ screen_width, screen_height = 720, 480
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+x, y = 240,160
 
 # The user controlled character
-user = player.Character('red', 'boy',"assests/red_walking.png", screen_width, screen_height)
-previous = 0
-user_frame = user.idle(previous)
+user = player.Character(x,y,'assests/red_walking.png', screen_width, screen_height)
 
-object = player.Character('green', 'girl', 'assests/green_walking.png', screen_width, screen_height)
-object.frame = object.idle(previous)
-
-x, y = 100,100
-
+oak = player.Character(120,160, 'assests/oak.png', screen_width, screen_height)
+obstacle = pygame.sprite.Group()
+obstacle.add(oak)
 
 # To control the frame rate
 clock = pygame.time.Clock()
@@ -37,11 +34,9 @@ while running:
 
     keys = pygame.key.get_pressed()
     
-    user_frame, x, y, previous = user.walking(keys, x, y, previous)
-
-
-    screen.blit(user_frame, (x,y))
-    screen.blit(object.frame, (200, 200))
+    user.update(keys, obstacle)
+    screen.blit(user.image, user.rect)
+    obstacle.draw(screen)
 
 
     pygame.display.flip()
