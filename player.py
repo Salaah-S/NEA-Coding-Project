@@ -3,8 +3,9 @@ import pygame
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, loc, screen_width, screen_height):
+    def __init__(self, x, y, loc, screen_width, screen_height, tile_size):
         super().__init__()
+        self.tile_size = tile_size
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.previous = 0 
@@ -33,7 +34,7 @@ class Character(pygame.sprite.Sprite):
                 animation_list.append(self.sprites[i+4])
             now = animation_list[self.current_frame]
 
-            self.rect.top -= 8
+            self.rect.top -= self.screen_height//self.tile_size
             if self.rect.top < 0:
                 self.rect.top = 0
 
@@ -48,7 +49,7 @@ class Character(pygame.sprite.Sprite):
                 animation_list.append(self.sprites[i])
             now = animation_list[self.current_frame]
 
-            self.rect.bottom += 8
+            self.rect.bottom += self.screen_height//self.tile_size
             if self.rect.bottom > self.screen_height:
                 self.rect.bottom = self.screen_height
             self.current_frame +=1
@@ -62,7 +63,7 @@ class Character(pygame.sprite.Sprite):
                 animation_list.append(self.sprites[i+8])
             now = animation_list[self.current_frame]
 
-            self.rect.left -= 8
+            self.rect.left -= self.screen_width//self.tile_size
             if self.rect.left <0:
                 self.rect.left = 0
             self.current_frame +=1
@@ -76,7 +77,7 @@ class Character(pygame.sprite.Sprite):
                 animation_list.append(self.sprites[i+12])
             now = animation_list[self.current_frame]
 
-            self.rect.right += 8
+            self.rect.right += self.screen_width//self.tile_size
             if self.rect.right > self.screen_width:
                 self.rect.right = self.screen_width
             self.current_frame +=1
