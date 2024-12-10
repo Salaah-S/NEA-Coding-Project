@@ -12,9 +12,9 @@ class Character(pygame.sprite.Sprite):
         self.loc = spritesheet.Spritesheet(loc)
         self.sprites = []
         for i in range(12):
-            self.sprites.append(self.loc.get_sprite((i), 16,32,3))
+            self.sprites.append(self.loc.get_sprite((i), 16,32,3, (255,255,255)))
             if i == 2 or i == 5 or i == 8 or i == 11:
-                self.sprites.append(self.loc.get_sprite(i-1, 16,32,3))
+                self.sprites.append(self.loc.get_sprite(i-1, 16,32,3, (255,255,255)))
 
 
         self.current_frame = 1
