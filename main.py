@@ -18,8 +18,8 @@ class Main_Game():
         # Here, declaring the screen 
         self.screen = pygame.display.set_mode((screen_width, screen_height))
         self.start_menu_state = True
-        self.user = player.Character(x,y,'assests/red_walking.png', screen_width, screen_height, tile_size)
-        oak = player.Character(120,160, 'assests/oak.png', screen_width, screen_height, tile_size)
+        self.user = player.Character(x,y,'assets/character/red_walking.png', screen_width, screen_height, tile_size)
+        oak = player.Character(120,160, 'assets/character/oak.png', screen_width, screen_height, tile_size)
         self.obstacle = pygame.sprite.Group()
         self.obstacle.add(oak)
 
