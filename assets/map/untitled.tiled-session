@@ -1,0 +1,61 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "16 by 16.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        },
+        "8_by_8.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 16,
+            "scaleInEditor": 1
+        },
+        "buildings.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        },
+        "map.tmx": {
+            "scale": 2,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 247.25,
+                "y": 137.75
+            }
+        },
+        "tiles.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 11
+        }
+    },
+    "last.imagePath": "C:/Users/salaa/Desktop/map",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 8,
+    "map.tileWidth": 8,
+    "openFiles": [
+        "map.tmx",
+        "tiles.tsx",
+        "buildings.tsx"
+    ],
+    "project": "untitled.tiled-project",
+    "recentFiles": [
+        "buildings.tsx",
+        "tiles.tsx",
+        "map.tmx",
+        "16 by 16.tsx",
+        "8_by_8.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.spacing": 1,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

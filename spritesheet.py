@@ -12,3 +12,10 @@ class Spritesheet:
 
         return sprite
     
+class Tiles(pygame.sprite.Sprite):
+    def __init__(self, pos, surf, groups, scale):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_frect(topleft = pos)
+        self.image = pygame.transform.scale(self.image, ((16*scale), (16*scale)))
+    

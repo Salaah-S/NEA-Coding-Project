@@ -1,7 +1,8 @@
 import pygame
 import sys
+from pytmx.util_pygame import load_pygame
 import player
-import spritesheet
+from spritesheet import *
 
 
 # Initialised the pygame library
@@ -9,7 +10,7 @@ pygame.init()
 
 # Defining the screen width, height and setting the display screen
 screen_width, screen_height= 720, 480
-tile_size = 64
+tile_size = 16
 
 x, y = 240,160
 
@@ -18,17 +19,22 @@ class Main_Game():
     def __init__(self, screen_width, screen_height, tile_size):
         # Here, declaring the screen 
         self.screen = pygame.display.set_mode((screen_width, screen_height))
+        self.tilesize = tile_size
         self.start_menu_state = True
         self.user = player.Character(x,y,'assets/character/red_walking.png', screen_width, screen_height, tile_size)
         oak = player.Character(120,160, 'assets/character/oak.png', screen_width, screen_height, tile_size)
-        self.obstacle = pygame.sprite.Group()
-        self.obstacle.add(oak)
+        self.obstacles = pygame.sprite.Group()
+        self.obstacles.add(oak)
+
+        self.map()
+        self.setup(self.tmx_maps['world'], 'house')
+
 
     def start_menu(self,key_press):
         self.screen.fill('black')
         font = pygame.font.Font(None, 60)
 
-        logo = spritesheet.Spritesheet('assets/logo.png').get_sprite(0,172, 104,3, (255,255,255))
+        logo = Spritesheet('assets/logo.png').get_sprite(0,172, 104,3, (255,255,255))
         logo_rect = logo.get_rect(center=(360, 200))
 
         play_text = self.font_writing('Press Shift', "assets/dark_font.png")
@@ -77,13 +83,21 @@ class Main_Game():
         }
 
         text_img = []
-        text_loc = spritesheet.Spritesheet(font)
+        text_loc = Spritesheet(font)
         i = 0
         for letter in text.upper():
             num = letter_dict[letter]
             text_img.append(text_loc.get_sprite(num,6,9,4,(0,0,0)))
             i+=1
         return text_img
+
+    def map(self):
+        self.tmx_maps = {'world': load_pygame('assets/map/towm.tmx')}
+    
+    def setup(self, tmx_map, player_start_pos):
+        for x, y, surf in tmx_map.get_layer_by_name('Grass').tiles():
+            Tiles((x*self.tilesize*3, y*self.tilesize*3), surf, self.obstacles, 3)
+
 
 
     def game_loop(self):
@@ -101,14 +115,15 @@ class Main_Game():
             if self.start_menu_state:
                 self.start_menu(keys)
             else:
-                self.user.update(keys, self.obstacle)
+                self.user.update(keys, self.obstacles)
                 self.screen.blit(self.user.image, self.user.rect)
-                self.obstacle.draw(self.screen)
+                self.obstacles.draw(self.screen)
+                
 
 
             pygame.display.flip()
 
-            clock.tick(20)
+            clock.tick(18)
 
 
         pygame.quit()

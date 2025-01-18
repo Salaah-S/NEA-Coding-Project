@@ -20,7 +20,7 @@ class Character(pygame.sprite.Sprite):
         self.current_frame = 1
 
         self.image = self.sprites[self.current_frame]
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_frect()
         self.rect.topleft = (x,y)
         self.previous_position = self.rect.topleft
         
