@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map.tmx",
+    "activeFile": "world.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -33,26 +33,41 @@
         "tiles.tsx": {
             "scaleInDock": 3,
             "scaleInEditor": 11
+        },
+        "world.tmx": {
+            "expandedObjectLayers": [
+                4,
+                3
+            ],
+            "scale": 2.91,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 598.2817869415808,
+                "y": 209.62199312714776
+            }
         }
     },
-    "last.imagePath": "C:/Users/salaa/Desktop/map",
+    "last.imagePath": "/Users/sfamily/Documents/GitHub/NEA-Coding-Project/assets/map",
+    "map.height": 32,
     "map.lastUsedFormat": "tmx",
-    "map.tileHeight": 8,
-    "map.tileWidth": 8,
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 90,
     "openFiles": [
-        "map.tmx",
-        "tiles.tsx",
-        "buildings.tsx"
+        "world.tmx",
+        "tiles.tsx"
     ],
     "project": "untitled.tiled-project",
     "recentFiles": [
-        "buildings.tsx",
         "tiles.tsx",
+        "world.tmx",
+        "buildings.tsx",
         "map.tmx",
         "16 by 16.tsx",
         "8_by_8.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 0,
     "tileset.spacing": 1,
     "tileset.tileSize": {
         "height": 16,

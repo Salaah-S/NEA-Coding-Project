@@ -1,49 +1,51 @@
 import pygame
 import sys
-from pytmx.util_pygame import load_pygame
 import player
-from spritesheet import *
+import spritesheet
+from pytmx.util_pygame import load_pygame
 
 
 # Initialised the pygame library
 pygame.init()
 
-# Defining the screen width, height and setting the display screen
-screen_width, screen_height= 720, 480
-tile_size = 16
-
-x, y = 240,160
 
 
 class Main_Game():
     def __init__(self, screen_width, screen_height, tile_size):
         # Here, declaring the screen 
         self.screen = pygame.display.set_mode((screen_width, screen_height))
+        self.tile_size = tile_size
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+
+        # Adding the states
+        self.game_speed = 20
         self.game_loop_state = False
         self.start_menu_state = True
         self.title_screen_state = True
         self.settings_state = False
-        self.user = player.Character(x,y,'assets/character/red_walking.png', screen_width, screen_height, tile_size)
-        oak = player.Character(120,160, 'assets/character/oak.png', screen_width, screen_height, tile_size)
-        self.obstacles = pygame.sprite.Group()
-        self.obstacles.add(oak)
-
-        self.map()
+        
+        
+        self.all_sprites = spritesheet.Camera(self.screen)
+        self.import_maps()
         self.setup(self.tmx_maps['world'], 'house')
 
 
+    
+
+        
+
     def start_menu(self,key_press):
         self.screen.fill('black')
-        font = pygame.font.Font(None, 60)
 
         logo = spritesheet.Spritesheet('assets/logo.png').get_sprite(0,172, 104,3, (255,255,255))
-        logo_rect = logo.get_rect(center=(360, 200))
+        logo_rect = logo.get_rect(center=(720, 200))
 
     
         play_text = self.font_writing('Press Shift', "assets/dark_font.png")
         count = 0
         for text in play_text:
-            self.screen.blit(text,((count+228),400) )
+            self.screen.blit(text,((count+640),400) )
             count+=(6*4)
         
 
@@ -68,11 +70,11 @@ class Main_Game():
             count+=(6*4)
 
         if key_press[pygame.K_a]:
+            self.game_loop_state = True
             self.title_screen_state = False
         elif key_press[pygame.K_b]:
             self.settings_state = True
             self.title_screen_state = False
-
 
     def settings(self, key_press):
         self.screen.fill('black')
@@ -85,25 +87,31 @@ class Main_Game():
             count+=(6*4)
 
         speed = {
-            0: 'Slow',
-            1: 'Fast'
+            28: 'Slow',
+            20: 'Fast'
         }
-        current_speed = speed[0]
+        current_speed = speed[self.game_speed]
         speed_options = self.font_writing(f"{current_speed}    Press A to change", 'assets/dark_font.png')
         count = 0
         for text in speed_options:
-            self.screen.blit(text,((count+150),300) )
+            self.screen.blit(text,((count+100),300) )
             count+=(6*4)
 
+        exit_text = self.font_writing("Press Return to save", "assets/dark_font.png")
+        count = 0
+        for text in exit_text:
+            self.screen.blit(text,((count+90),400) )
+            count+=(6*4)
+
+
         if key_press[pygame.K_a]:
-            if current_speed == speed[0]:
-                current_speed = speed[1]
+            if self.game_speed == 20:
+                self.game_speed = 28
             else:
-                current_speed = speed[0]
-        
-
-
-
+                self.game_speed = 20
+        elif key_press[pygame.K_RETURN]:
+            self.title_screen_state = True
+            self.settings_state = False
 
     def font_writing(self, text, font):
         letter_dict = {
@@ -137,7 +145,7 @@ class Main_Game():
         }
 
         text_img = []
-        text_loc = Spritesheet(font)
+        text_loc = spritesheet.Spritesheet(font)
         i = 0
         for letter in text.upper():
             num = letter_dict[letter]
@@ -145,20 +153,39 @@ class Main_Game():
             i+=1
         return text_img
 
-    def map(self):
-        self.tmx_maps = {'world': load_pygame('assets/map/towm.tmx')}
+    def import_maps(self):
+        self.tmx_maps = {'world': load_pygame('assets/map/world.tmx')}
     
     def setup(self, tmx_map, player_start_pos):
-        for x, y, surf in tmx_map.get_layer_by_name('Grass').tiles():
-            Tiles((x*self.tilesize*3, y*self.tilesize*3), surf, self.obstacles, 3)
+        # for ground level
+        for x,y, surf in tmx_map.get_layer_by_name('Ground').tiles():
+            spritesheet.Tiles((x*self.tile_size,y*self.tile_size), surf, self.all_sprites, 2)
+        
+        # for the upper ground level
+        for x,y,surf in tmx_map.get_layer_by_name('Upper Ground').tiles():
+            spritesheet.Tiles((x*self.tile_size, y*self.tile_size), surf, self.all_sprites,2)
+        
+        # for the grass tiles
+        for obj in tmx_map.get_layer_by_name('Grass'):
+            spritesheet.Tiles((obj.x, obj.y), obj.image, self.all_sprites, 2)
 
+
+        # for the entities
+        for obj in tmx_map.get_layer_by_name('Entities'):
+            if obj.name == 'Player':
+                if obj.properties['Position'] == player_start_pos:
+                    self.x, self.y = obj.x, obj.y
+                    self.user = player.Character(self.x, self.y,'assets/character/red_walking.png', self.screen_width, self.screen_height, self.tile_size)
+            else:
+                print(obj.name)
+                self.all_sprites.add(player.NPC(obj.x*2, obj.y*2, f'assets/character/{obj.name}.png', self.screen_width, self.screen_height, self.tile_size))
 
 
     def game_loop(self):
         clock = pygame.time.Clock()
         running = True
         while running:
-            self.screen.fill("grey")
+            self.screen.fill("black")
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -168,16 +195,24 @@ class Main_Game():
 
             if self.start_menu_state:
                 self.start_menu(keys)
-            else:
-                self.user.update(keys, self.obstacles)
+            elif self.title_screen_state:
+                self.title_screen(keys)
+            elif self.settings_state:
+                self.settings(keys)
+
+            elif self.game_loop_state:
+                self.user.update(keys)
+                
+                self.all_sprites.draw(self.x, self.y)
+                # self.obstacles.draw(self.screen)
                 self.screen.blit(self.user.image, self.user.rect)
-                self.obstacles.draw(self.screen)
+                self.x, self.y = self.user.rect.x, self.user.rect.y
                 
 
 
             pygame.display.flip()
 
-            clock.tick(20)
+            clock.tick(self.game_speed)
 
 
         pygame.quit()
@@ -185,5 +220,5 @@ class Main_Game():
 
 
 
-game = Main_Game(screen_width, screen_height, tile_size)
+game = Main_Game(spritesheet.screen_width, spritesheet.screen_height, spritesheet.tile_size)
 game.game_loop()
