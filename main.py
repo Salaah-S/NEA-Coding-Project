@@ -14,16 +14,19 @@ class Main_Game():
     def __init__(self, screen_width, screen_height, tile_size):
         # Here, declaring the screen 
         self.screen = pygame.display.set_mode((screen_width, screen_height))
+
         self.tile_size = tile_size
         self.screen_width = screen_width
         self.screen_height = screen_height
 
         # Adding the states
         self.game_speed = 20
+
         self.game_loop_state = False
         self.start_menu_state = True
         self.title_screen_state = True
         self.settings_state = False
+
         
         
         self.all_sprites = spritesheet.Camera(self.screen)
@@ -31,9 +34,11 @@ class Main_Game():
         self.setup(self.tmx_maps['world'], 'house')
 
 
-    
+        self.user = player.Character(x,y,'assets/character/red_walking.png', screen_width, screen_height, tile_size)
+        oak = player.Character(120,160, 'assets/character/oak.png', screen_width, screen_height, tile_size)
+        self.obstacle = pygame.sprite.Group()
+        self.obstacle.add(oak)
 
-        
 
     def start_menu(self,key_press):
         self.screen.fill('black')
@@ -48,9 +53,8 @@ class Main_Game():
             self.screen.blit(text,((count+640),400) )
             count+=(6*4)
         
-
-        
         self.screen.blit(logo, logo_rect)
+
         if key_press[pygame.K_LSHIFT] or key_press[pygame.K_RSHIFT]:
             self.start_menu_state = False
     
@@ -76,6 +80,7 @@ class Main_Game():
             self.settings_state = True
             self.title_screen_state = False
 
+            
     def settings(self, key_press):
         self.screen.fill('black')
 
@@ -112,6 +117,7 @@ class Main_Game():
         elif key_press[pygame.K_RETURN]:
             self.title_screen_state = True
             self.settings_state = False
+
 
     def font_writing(self, text, font):
         letter_dict = {
@@ -201,10 +207,12 @@ class Main_Game():
                 self.settings(keys)
 
             elif self.game_loop_state:
+
                 self.user.update(keys)
                 
                 self.all_sprites.draw(self.x, self.y)
                 # self.obstacles.draw(self.screen)
+
                 self.screen.blit(self.user.image, self.user.rect)
                 self.x, self.y = self.user.rect.x, self.user.rect.y
                 
