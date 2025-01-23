@@ -34,10 +34,10 @@ class Main_Game():
         self.setup(self.tmx_maps['world'], 'house')
 
 
-        self.user = player.Character(x,y,'assets/character/red_walking.png', screen_width, screen_height, tile_size)
-        oak = player.Character(120,160, 'assets/character/oak.png', screen_width, screen_height, tile_size)
-        self.obstacle = pygame.sprite.Group()
-        self.obstacle.add(oak)
+        # self.user = player.Character(x,y,'assets/character/red_walking.png', screen_width, screen_height, tile_size)
+        # oak = player.Character(120,160, 'assets/character/oak.png', screen_width, screen_height, tile_size)
+        # self.obstacle = pygame.sprite.Group()
+        # self.obstacle.add(oak)
 
 
     def start_menu(self,key_press):
@@ -79,8 +79,7 @@ class Main_Game():
         elif key_press[pygame.K_b]:
             self.settings_state = True
             self.title_screen_state = False
-
-            
+   
     def settings(self, key_press):
         self.screen.fill('black')
 
@@ -117,7 +116,6 @@ class Main_Game():
         elif key_press[pygame.K_RETURN]:
             self.title_screen_state = True
             self.settings_state = False
-
 
     def font_writing(self, text, font):
         letter_dict = {
@@ -175,7 +173,6 @@ class Main_Game():
         for obj in tmx_map.get_layer_by_name('Grass'):
             spritesheet.Tiles((obj.x, obj.y), obj.image, self.all_sprites, 2)
 
-
         # for the entities
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
@@ -183,9 +180,7 @@ class Main_Game():
                     self.x, self.y = obj.x, obj.y
                     self.user = player.Character(self.x, self.y,'assets/character/red_walking.png', self.screen_width, self.screen_height, self.tile_size)
             else:
-                print(obj.name)
                 self.all_sprites.add(player.NPC(obj.x*2, obj.y*2, f'assets/character/{obj.name}.png', self.screen_width, self.screen_height, self.tile_size))
-
 
     def game_loop(self):
         clock = pygame.time.Clock()
