@@ -34,12 +34,6 @@ class Main_Game():
         self.setup(self.tmx_maps['world'], 'house')
 
 
-        # self.user = player.Character(x,y,'assets/character/red_walking.png', screen_width, screen_height, tile_size)
-        # oak = player.Character(120,160, 'assets/character/oak.png', screen_width, screen_height, tile_size)
-        # self.obstacle = pygame.sprite.Group()
-        # self.obstacle.add(oak)
-
-
     def start_menu(self,key_press):
         self.screen.fill('black')
 
