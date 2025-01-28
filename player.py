@@ -3,7 +3,7 @@ import pygame
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, loc, screen_width, screen_height, walking_speed):
+    def __init__(self, x, y, loc, screen_width, screen_height, walking_speed, collision):
         super().__init__()
         self.walking_speed = walking_speed*2
         self.screen_height = screen_height
@@ -20,90 +20,71 @@ class Character(pygame.sprite.Sprite):
         self.current_frame = 1
 
         self.image = self.sprites[self.current_frame]
-        self.rect = self.image.get_frect()
-        self.rect.topleft = (x,y)
-        self.previous_position = self.rect.topleft
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+        self.previous_position = self.rect.center
 
-        self.hitbox = pygame.Rect(self.rect.left, self.rect.top + self.rect.height // 2, self.rect.width, self.rect.height // 2)
-        
+        self.vertical = self.screen_height//(2*self.walking_speed)
+        self.horizontal = self.screen_width//(2.5*self.walking_speed)
+        self.hitbox = pygame.Rect(self.rect.x, self.rect.y + self.rect.height // 2, self.rect.width, self.rect.height // 2)
+        self.collision = collision
+
     def update(self, direction):
-        self.previous_position = self.rect.topleft
+        self.previous_position = self.hitbox.topleft  # Save previous position
 
+        # Get initial frame for animation
+        self.current_frame = (self.current_frame + 1) % 4
+
+        # Vertical movement
         if direction[pygame.K_UP]:
             self.previous = pygame.K_UP
-            animation_list = []
-            for i in range(4):
-                animation_list.append(self.sprites[i+4])
-            now = animation_list[self.current_frame]
+            self.hitbox.y -= self.vertical  # Move first
 
-            self.rect.top -= self.screen_height//(3*self.walking_speed)
-            if self.hitbox.top < 0 or self.rect.top < 0 :
-                self.rect.top = 0
+            # Check for collisions
+            for sprite in self.collision:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    self.hitbox.top = sprite.hitbox.bottom  # Prevent movement
 
-            self.hitbox.topleft = (self.rect.left, self.rect.top + self.rect.height // 2)
+            self.rect.topleft = self.hitbox.topleft  # Sync rect with hitbox
+            self.image = self.sprites[self.current_frame + 4]
 
-            self.current_frame +=1
-            if self.current_frame == 4:
-                self.current_frame = 0
-        
         elif direction[pygame.K_DOWN]:
             self.previous = pygame.K_DOWN
-            animation_list = []
-            for i in range(4):
-                animation_list.append(self.sprites[i])
-            now = animation_list[self.current_frame]
+            self.hitbox.y += self.vertical  # Move first
 
-            self.rect.bottom += self.screen_height//(3*self.walking_speed)
-            if self.hitbox.bottom > self.screen_height:
-                self.rect.bottom = self.screen_height
+            for sprite in self.collision:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    self.hitbox.bottom = sprite.hitbox.top
 
-            self.hitbox.topleft = (self.rect.left, self.rect.top + self.rect.height // 2)
+            self.rect.topleft = self.hitbox.topleft
+            self.image = self.sprites[self.current_frame]
 
-            self.current_frame +=1
-            if self.current_frame == 4:
-                self.current_frame = 0
-
+        # Horizontal movement
         elif direction[pygame.K_LEFT]:
             self.previous = pygame.K_LEFT
-            animation_list = []
-            for i in range(4):
-                animation_list.append(self.sprites[i+8])
-            now = animation_list[self.current_frame]
+            self.hitbox.x -= self.horizontal  # Move first
 
-            self.rect.left -= self.screen_width//(6*self.walking_speed)
-            if self.hitbox.left <0:
-                self.rect.left = 0
+            for sprite in self.collision:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    self.hitbox.left = sprite.hitbox.right
 
-            self.hitbox.topleft = (self.rect.left, self.rect.top + self.rect.height // 2)  
-
-            self.current_frame +=1
-            if self.current_frame == 4:
-                self.current_frame = 0
+            self.rect.topleft = self.hitbox.topleft
+            self.image = self.sprites[self.current_frame + 8]
 
         elif direction[pygame.K_RIGHT]:
             self.previous = pygame.K_RIGHT
-            animation_list = []
-            for i in range(4):
-                animation_list.append(self.sprites[i+12])
-            now = animation_list[self.current_frame]
+            self.hitbox.x += self.horizontal  # Move first
 
-            self.rect.right += self.screen_width//(6*self.walking_speed) 
-            if self.hitbox.right > self.screen_width:
-                self.rect.right = self.screen_width
-            
-            self.hitbox.topleft = (self.rect.left, self.rect.top + self.rect.height // 2)
-            
-            self.current_frame +=1
-            if self.current_frame == 4:
-                self.current_frame = 0
+            for sprite in self.collision:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    self.hitbox.right = sprite.hitbox.left
+
+            self.rect.topleft = self.hitbox.topleft
+            self.image = self.sprites[self.current_frame + 12]
+
+        # If no movement, idle animation
         else:
-            now = self.sprites[self.idle(self.previous)]
-        
-        # if pygame.sprite.spritecollide(self, obstacles, False):
-        #     self.rect.topleft = self.previous_position
-        
-        self.image = now
-        return now
+            self.image = self.sprites[self.idle(self.previous)]
     
     def idle(self, key):
 
@@ -115,7 +96,9 @@ class Character(pygame.sprite.Sprite):
             0:1
         }
         return keys[key]
+    
+
 
 class NPC(Character):
-    def __init__(self, x, y, loc, screen_width, screen_height, walking_speed):
-        super().__init__(x, y, loc, screen_width, screen_height, walking_speed)
+    def __init__(self, x, y, loc, screen_width, screen_height, walking_speed, collision):
+        super().__init__(x, y, loc, screen_width, screen_height, walking_speed, collision=None)

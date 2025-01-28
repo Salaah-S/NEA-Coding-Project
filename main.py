@@ -3,6 +3,7 @@ import sys
 import player
 import spritesheet
 from pytmx.util_pygame import load_pygame
+import pokemon
 
 
 # Initialised the pygame library
@@ -28,10 +29,21 @@ class Main_Game():
         self.settings_state = False
 
         
-        
+        self.collision_sprites = pygame.sprite.Group()
         self.all_sprites = spritesheet.Camera(self.screen)
+        
         self.import_maps()
         self.setup(self.tmx_maps['world'], 'house')
+
+        self.user_pokemon = {
+            0: pokemon.Pokemon("Charmander", 5),
+            1: pokemon.Pokemon("Pidgey", 4)
+        }
+        self.dummy = {
+            0: pokemon.Pokemon("Squirtle", 6),
+            1: pokemon.Pokemon("Pidgey", 4)           
+        }
+        # self.battle = pokemon.Battle(self.user_pokemon, self.dummy, )
 
 
     def start_menu(self,key_press):
@@ -157,24 +169,30 @@ class Main_Game():
     def setup(self, tmx_map, player_start_pos):
         # for ground level
         for x,y, surf in tmx_map.get_layer_by_name('Ground').tiles():
-            spritesheet.Tiles((x*self.tile_size,y*self.tile_size), surf, self.all_sprites, 2)
+            spritesheet.Tiles((x*self.tile_size,y*self.tile_size), surf, self.all_sprites)
+
         
         # for the upper ground level
         for x,y,surf in tmx_map.get_layer_by_name('Upper Ground').tiles():
-            spritesheet.Tiles((x*self.tile_size, y*self.tile_size), surf, self.all_sprites,2)
+            spritesheet.Tiles((x*self.tile_size,y*self.tile_size), surf, self.all_sprites)
         
+        # for collisions
+        for obj in tmx_map.get_layer_by_name('Collisions'):
+            spritesheet.BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
+
         # for the grass tiles
         for obj in tmx_map.get_layer_by_name('Grass'):
-            spritesheet.Tiles((obj.x, obj.y), obj.image, self.all_sprites, 2)
+            spritesheet.Tiles((obj.x, obj.y), obj.image, self.all_sprites)
 
         # for the entities
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
                 if obj.properties['Position'] == player_start_pos:
                     self.x, self.y = obj.x, obj.y
-                    self.user = player.Character(self.x, self.y,'assets/character/red_walking.png', self.screen_width, self.screen_height, self.tile_size)
+                    self.user = player.Character(self.x, self.y,'assets/character/red_walking.png', self.screen_width, self.screen_height, self.tile_size, self.collision_sprites)
             else:
-                self.all_sprites.add(player.NPC(obj.x*2, obj.y*2, f'assets/character/{obj.name}.png', self.screen_width, self.screen_height, self.tile_size))
+                sprite = player.NPC(obj.x, obj.y, f'assets/character/{obj.name}.png', self.screen_width, self.screen_height, self.tile_size, self.collision_sprites)
+                self.all_sprites.add(sprite)
 
     def game_loop(self):
         clock = pygame.time.Clock()
@@ -199,14 +217,11 @@ class Main_Game():
 
                 self.user.update(keys)
                 
-                self.all_sprites.draw(self.x, self.y)
-                # self.obstacles.draw(self.screen)
+                self.all_sprites.draw((self.x, self.y))
 
                 self.screen.blit(self.user.image, self.user.rect)
                 self.x, self.y = self.user.rect.x, self.user.rect.y
-                
-
-
+     
             pygame.display.flip()
 
             clock.tick(self.game_speed)

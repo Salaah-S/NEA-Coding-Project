@@ -1,8 +1,8 @@
 import pygame
 
 # Defining the screen width, height and setting the display screen
-tile_size = 16
-screen_width, screen_height= 1440, 480
+tile_size = 32
+screen_width, screen_height= 1280, 720
 
 
 class Spritesheet:
@@ -14,17 +14,14 @@ class Spritesheet:
         sprite.blit(self.sheet, (0,0), ((frame * width), 0, width, height))
         sprite = pygame.transform.scale(sprite, ((width * scale), (height* scale)))
         sprite.set_colorkey(colorkey)
-
         return sprite
     
 class Tiles(pygame.sprite.Sprite):
-    def __init__(self, pos, surf, groups, scale):
+    def __init__(self, pos, surf, groups):
         super().__init__(groups)
-        self.x = pos[0]*scale
-        self.y = pos[1]*scale
         self.image = surf
-        self.rect = self.image.get_frect(topleft = (self.x, self.y))
-        self.image = pygame.transform.scale(self.image, ((tile_size*scale), (tile_size*scale)))
+        self.rect = self.image.get_rect(topleft = pos)
+        self.hitbox = self.rect.copy()
     
 class Camera(pygame.sprite.Group):
     def __init__(self, surf):
@@ -32,9 +29,14 @@ class Camera(pygame.sprite.Group):
         self.display_surface = surf
         
 
-    def draw(self, player_x, player_y):
-        self.x_offset = -(player_x-screen_width//(3*tile_size))
-        self.y_offset = -(player_y-screen_height//(3*tile_size))
+    def draw(self, player_pos):
+        self.x_offset = -(player_pos[0]-screen_width//(tile_size))
+        self.y_offset = -(player_pos[1]-screen_height//(tile_size))
 
         for sprite in self:
             self.display_surface.blit(sprite.image, (sprite.rect.x + self.x_offset, sprite.rect.y + self.y_offset))
+       
+class BorderSprite(Tiles):
+    def __init__(self, pos, surf, groups):
+        super().__init__(pos, surf, groups)
+        self.hitbox = self.rect.copy()
