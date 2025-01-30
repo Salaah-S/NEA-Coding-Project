@@ -30,6 +30,7 @@ class Main_Game():
 
         
         self.collision_sprites = pygame.sprite.Group()
+        self.encounters = pygame.sprite.Group()
         self.all_sprites = spritesheet.Camera(self.screen)
         
         self.import_maps()
@@ -40,10 +41,10 @@ class Main_Game():
             1: pokemon.Pokemon("Pidgey", 4)
         }
         self.dummy = {
-            0: pokemon.Pokemon("Squirtle", 6),
+            0: pokemon.Pokemon("Mewtwo", 6),
             1: pokemon.Pokemon("Pidgey", 4)           
         }
-        # self.battle = pokemon.Battle(self.user_pokemon, self.dummy, )
+        self.battle = False
 
 
     def start_menu(self,key_press):
@@ -53,7 +54,7 @@ class Main_Game():
         logo_rect = logo.get_rect(center=(720, 200))
 
     
-        play_text = self.font_writing('Press Shift', "assets/dark_font.png")
+        play_text = spritesheet.font_writing('Press Shift', "assets/dark_font.png")
         count = 0
         for text in play_text:
             self.screen.blit(text,((count+640),400) )
@@ -67,8 +68,8 @@ class Main_Game():
     def title_screen(self, key_press):
         
         self.screen.fill('black')
-        save_text = self.font_writing('New Game    Press A', 'assets/dark_font.png')
-        settings_text = self.font_writing('Settings    Press B', 'assets/dark_font.png')
+        save_text = spritesheet.font_writing('New Game    Press A', 'assets/dark_font.png')
+        settings_text = spritesheet.font_writing('Settings    Press B', 'assets/dark_font.png')
 
         count = 0
         for text in save_text:
@@ -90,7 +91,7 @@ class Main_Game():
         self.screen.fill('black')
 
     
-        text_speed_text = self.font_writing('Select Text Speed','assets/dark_font.png' )
+        text_speed_text = spritesheet.font_writing('Select Text Speed','assets/dark_font.png' )
         count = 0
         for text in text_speed_text:
             self.screen.blit(text,((count+150),150) )
@@ -101,13 +102,13 @@ class Main_Game():
             20: 'Fast'
         }
         current_speed = speed[self.game_speed]
-        speed_options = self.font_writing(f"{current_speed}    Press A to change", 'assets/dark_font.png')
+        speed_options = spritesheet.font_writing(f"{current_speed}    Press A to change", 'assets/dark_font.png')
         count = 0
         for text in speed_options:
             self.screen.blit(text,((count+100),300) )
             count+=(6*4)
 
-        exit_text = self.font_writing("Press Return to save", "assets/dark_font.png")
+        exit_text = spritesheet.font_writing("Press Return to save", "assets/dark_font.png")
         count = 0
         for text in exit_text:
             self.screen.blit(text,((count+90),400) )
@@ -122,46 +123,6 @@ class Main_Game():
         elif key_press[pygame.K_RETURN]:
             self.title_screen_state = True
             self.settings_state = False
-
-    def font_writing(self, text, font):
-        letter_dict = {
-            'A':0,
-            'B':1,
-            'C':2,
-            'D':3,
-            'E':4,
-            'F':5,
-            'G':6,
-            'H':7,
-            'I':8,
-            'J':9,
-            'K':10,
-            'L':11,
-            'M':12,
-            'N':13,
-            'O':14,
-            'P':15,
-            'Q':16,
-            'R':17,
-            'S':18,
-            'T':19,
-            'U':20,
-            'V':21,
-            'W':22,
-            'X':23,
-            'Y':24,
-            'Z':25, 
-            ' ':26
-        }
-
-        text_img = []
-        text_loc = spritesheet.Spritesheet(font)
-        i = 0
-        for letter in text.upper():
-            num = letter_dict[letter]
-            text_img.append(text_loc.get_sprite(num,6,9,4,(0,0,0)))
-            i+=1
-        return text_img
 
     def import_maps(self):
         self.tmx_maps = {'world': load_pygame('assets/map/world.tmx')}
@@ -178,11 +139,11 @@ class Main_Game():
         
         # for collisions
         for obj in tmx_map.get_layer_by_name('Collisions'):
-            spritesheet.BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
+            spritesheet.BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), (self.collision_sprites))
 
         # for the grass tiles
         for obj in tmx_map.get_layer_by_name('Grass'):
-            spritesheet.Tiles((obj.x, obj.y), obj.image, self.all_sprites)
+            spritesheet.Tiles((obj.x, obj.y), obj.image, (self.all_sprites, self.encounters))
 
         # for the entities
         for obj in tmx_map.get_layer_by_name('Entities'):
@@ -198,7 +159,7 @@ class Main_Game():
         clock = pygame.time.Clock()
         running = True
         while running:
-            self.screen.fill("black")
+            self.screen.fill("grey")
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -213,15 +174,23 @@ class Main_Game():
             elif self.settings_state:
                 self.settings(keys)
 
+            elif self.battle:
+                self.battle.update(keys)
+            
             elif self.game_loop_state:
-
+                    
                 self.user.update(keys)
+                if self.user.encounter_check(self.encounters):
+                    self.battle = pokemon.Battle(self.user_pokemon, self.dummy,pygame.image.load('assets/battle/battle_background.png') )
                 
                 self.all_sprites.draw((self.x, self.y))
 
                 self.screen.blit(self.user.image, self.user.rect)
                 self.x, self.y = self.user.rect.x, self.user.rect.y
-     
+
+                
+
+
             pygame.display.flip()
 
             clock.tick(self.game_speed)

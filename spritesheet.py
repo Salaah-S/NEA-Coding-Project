@@ -16,6 +16,15 @@ class Spritesheet:
         sprite.set_colorkey(colorkey)
         return sprite
     
+    def pkmn_sprite(self, column, row):
+        sprite = pygame.Surface((64,64)).convert_alpha()
+        start_loc = ((130*column),34+(165*row))
+        colorkey = self.sheet.get_at(start_loc)
+        sprite.blit(self.sheet, (0,0), (start_loc[0], start_loc[1], 64, 64))
+        sprite = pygame.transform.scale(sprite, ((64*3), (64*3)))
+        sprite.set_colorkey(colorkey)
+        return sprite
+    
 class Tiles(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
         super().__init__(groups)
@@ -30,8 +39,8 @@ class Camera(pygame.sprite.Group):
         
 
     def draw(self, player_pos):
-        self.x_offset = -(player_pos[0]-screen_width//(tile_size))
-        self.y_offset = -(player_pos[1]-screen_height//(tile_size))
+        self.x_offset = -(player_pos[0]+16-screen_width//(2))
+        self.y_offset = -(player_pos[1]+32-screen_height//(2))
 
         for sprite in self:
             self.display_surface.blit(sprite.image, (sprite.rect.x + self.x_offset, sprite.rect.y + self.y_offset))
@@ -40,3 +49,53 @@ class BorderSprite(Tiles):
     def __init__(self, pos, surf, groups):
         super().__init__(pos, surf, groups)
         self.hitbox = self.rect.copy()
+
+def font_writing(text, font):
+        
+        letter_dict = {
+            'A':0,
+            'B':1,
+            'C':2,
+            'D':3,
+            'E':4,
+            'F':5,
+            'G':6,
+            'H':7,
+            'I':8,
+            'J':9,
+            'K':10,
+            'L':11,
+            'M':12,
+            'N':13,
+            'O':14,
+            'P':15,
+            'Q':16,
+            'R':17,
+            'S':18,
+            'T':19,
+            'U':20,
+            'V':21,
+            'W':22,
+            'X':23,
+            'Y':24,
+            'Z':25, 
+            ' ':26
+        }
+
+        text_img = []
+        text_loc = Spritesheet(font)
+        i = 0
+        for letter in text.upper():
+            num = letter_dict[letter]
+            text_img.append(text_loc.get_sprite(num,6,9,4,(0,0,0)))
+            i+=1
+        return text_img
+
+
+def draw_bar(surface, rect, value, max_value, color, bg_color, radius = 1):
+	ratio = rect.width / max_value
+	bg_rect = rect.copy()
+	progress = max(0, min(rect.width,value * ratio))
+	progress_rect = pygame.FRect(rect.topleft, (progress,rect.height))
+	pygame.draw.rect(surface, bg_color, bg_rect, 0, radius)
+	pygame.draw.rect(surface, color, progress_rect, 0, radius)

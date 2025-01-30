@@ -97,6 +97,17 @@ class Character(pygame.sprite.Sprite):
         }
         return keys[key]
     
+    def encounter_check(self, grp):
+        for grass in grp:
+            if grass.hitbox.colliderect(self.hitbox):
+                return True
+
+
+
+
+
+
+
 
 
 class NPC(Character):
