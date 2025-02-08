@@ -25,6 +25,14 @@ class Spritesheet:
         sprite.set_colorkey(colorkey)
         return sprite
     
+    def name_box(self):
+        sprite = pygame.Surface((104,34)).convert_alpha()
+        colorkey = self.sheet.get_at((0,0))
+        sprite.blit(self.sheet, (0,0))
+        sprite = pygame.transform.scale(sprite, ((104*5), (34*5)))
+        sprite.set_colorkey(colorkey)
+        return sprite
+
 class Tiles(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
         super().__init__(groups)
@@ -85,9 +93,11 @@ def font_writing(text, font):
         text_img = []
         text_loc = Spritesheet(font)
         i = 0
+        colorkey = (0,0,0) if font == 'assets/dark_font.png' else (255,255,255)
+        
         for letter in text.upper():
             num = letter_dict[letter]
-            text_img.append(text_loc.get_sprite(num,6,9,4,(0,0,0)))
+            text_img.append(text_loc.get_sprite(num,6,9,4,colorkey))
             i+=1
         return text_img
 

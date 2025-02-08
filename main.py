@@ -4,7 +4,7 @@ import player
 import spritesheet
 from pytmx.util_pygame import load_pygame
 import pokemon
-
+import random
 
 # Initialised the pygame library
 pygame.init()
@@ -37,12 +37,12 @@ class Main_Game():
         self.setup(self.tmx_maps['world'], 'house')
 
         self.user_pokemon = {
-            0: pokemon.Pokemon("Charmander", 5),
+            0: pokemon.Pokemon("Charizard", 5),
             1: pokemon.Pokemon("Pidgey", 4)
         }
         self.dummy = {
-            0: pokemon.Pokemon("Mewtwo", 6),
-            1: pokemon.Pokemon("Pidgey", 4)           
+            0: pokemon.Pokemon("Farfetchd", 6),
+            1: pokemon.Pokemon("Pidgey", 4)
         }
         self.battle = False
 
@@ -51,13 +51,13 @@ class Main_Game():
         self.screen.fill('black')
 
         logo = spritesheet.Spritesheet('assets/logo.png').get_sprite(0,172, 104,3, (255,255,255))
-        logo_rect = logo.get_rect(center=(720, 200))
+        logo_rect = logo.get_rect(center=(640, 200))
 
     
         play_text = spritesheet.font_writing('Press Shift', "assets/dark_font.png")
         count = 0
         for text in play_text:
-            self.screen.blit(text,((count+640),400) )
+            self.screen.blit(text,((count+516),400) )
             count+=(6*4)
         
         self.screen.blit(logo, logo_rect)
@@ -73,11 +73,11 @@ class Main_Game():
 
         count = 0
         for text in save_text:
-            self.screen.blit(text,((count+150),150) )
+            self.screen.blit(text,((count+400),200) )
             count+=(6*4)
         count = 0
         for text in settings_text:
-            self.screen.blit(text,((count+150),300) )
+            self.screen.blit(text,((count+400),400) )
             count+=(6*4)
 
         if key_press[pygame.K_a]:
@@ -87,42 +87,48 @@ class Main_Game():
             self.settings_state = True
             self.title_screen_state = False
    
-    def settings(self, key_press):
-        self.screen.fill('black')
+    def settings(self):
 
-    
-        text_speed_text = spritesheet.font_writing('Select Text Speed','assets/dark_font.png' )
-        count = 0
-        for text in text_speed_text:
-            self.screen.blit(text,((count+150),150) )
-            count+=(6*4)
+        while True:
+            self.screen.fill('black')
 
-        speed = {
-            28: 'Slow',
-            20: 'Fast'
-        }
-        current_speed = speed[self.game_speed]
-        speed_options = spritesheet.font_writing(f"{current_speed}    Press A to change", 'assets/dark_font.png')
-        count = 0
-        for text in speed_options:
-            self.screen.blit(text,((count+100),300) )
-            count+=(6*4)
+            key_press = pygame.key.get_pressed()
+        
+            text_speed_text = spritesheet.font_writing('Select Text Speed','assets/dark_font.png' )
+            count = 0
+            for text in text_speed_text:
+                self.screen.blit(text,((count+150),150) )
+                count+=(6*4)
 
-        exit_text = spritesheet.font_writing("Press Return to save", "assets/dark_font.png")
-        count = 0
-        for text in exit_text:
-            self.screen.blit(text,((count+90),400) )
-            count+=(6*4)
+            speed = {
+                28: 'Slow',
+                20: 'Fast'
+            }
+            current_speed = speed[self.game_speed]
+            speed_options = spritesheet.font_writing(f"{current_speed}    Press A to change", 'assets/dark_font.png')
+            count = 0
+            for text in speed_options:
+                self.screen.blit(text,((count+100),300) )
+                count+=(6*4)
+
+            exit_text = spritesheet.font_writing("Press Return to save", "assets/dark_font.png")
+            count = 0
+            for text in exit_text:
+                self.screen.blit(text,((count+90),400) )
+                count+=(6*4)
 
 
-        if key_press[pygame.K_a]:
-            if self.game_speed == 20:
-                self.game_speed = 28
-            else:
-                self.game_speed = 20
-        elif key_press[pygame.K_RETURN]:
-            self.title_screen_state = True
-            self.settings_state = False
+            if key_press[pygame.K_a]:
+                if self.game_speed == 20:
+                    self.game_speed = 28
+                else:
+                    self.game_speed = 20
+            elif key_press[pygame.K_RETURN]:
+                self.title_screen_state = True
+                self.settings_state = False
+                break
+
+            pygame.time.Clock().tick(2)
 
     def import_maps(self):
         self.tmx_maps = {'world': load_pygame('assets/map/world.tmx')}
@@ -172,7 +178,7 @@ class Main_Game():
             elif self.title_screen_state:
                 self.title_screen(keys)
             elif self.settings_state:
-                self.settings(keys)
+                self.settings()
 
             elif self.battle:
                 self.battle.update(keys)
@@ -180,7 +186,8 @@ class Main_Game():
             elif self.game_loop_state:
                     
                 self.user.update(keys)
-                if self.user.encounter_check(self.encounters):
+                encounter_rate = random.randint(1,100)
+                if self.user.encounter_check(self.encounters) and encounter_rate == 1:
                     self.battle = pokemon.Battle(self.user_pokemon, self.dummy,pygame.image.load('assets/battle/battle_background.png') )
                 
                 self.all_sprites.draw((self.x, self.y))
