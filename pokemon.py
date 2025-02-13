@@ -1,6 +1,7 @@
 import csv
 import pygame
 import spritesheet
+import random
 
 
 with open("pokemon_data.csv", mode="r", newline="", encoding="utf-8") as file:
@@ -56,6 +57,9 @@ class Pokemon:
         self.sprite = self.sprite_loc.pkmn_sprite(column, row)
         return self.sprite
 
+    def fight(self, opp_health):
+        damage = int(((2*self.level)/5)+2+(0.5*(self.attack/self.defense))+2+random.uniform(0.85, 1))
+        return opp_health - damage
 
 
 
@@ -65,6 +69,7 @@ class Battle:
         self.display_surface = pygame.display.get_surface()
         self.bg = bg
         self.bg = pygame.transform.scale(self.bg,((240 * 5.5), (112* 5)))
+        
         self.user_sprites = []
         for i in user_pkmn:
             self.user_sprites.append(user_pkmn[i].sprites())
@@ -81,6 +86,7 @@ class Battle:
         self.default_state = True
         self.fight_state = False
         self.run_state = False
+        self.user_turn = True
 
     def update(self, keys):
         # Displays the background and the bottom label
@@ -90,11 +96,13 @@ class Battle:
         self.display_surface.blit(self.opp_sprites[0], (800, 150))
 
        
-
         if self.default_state:
             self.default(keys)
         elif self.fight_state:
-            self.fight()
+            if self.user_turn:
+                self.fight()
+            else:
+                self.opp_fight()
         elif self.run_state:
             self.run()
 
@@ -106,13 +114,13 @@ class Battle:
         self.display_surface.blit(name_box.name_box(), (750, 350))
 
         # for the names of the pokemon
-        name = spritesheet.font_writing(f'{self.pkmn_data['user'][0].name}', "assets/light_font.png")
+        name = spritesheet.font_writing(f'{self.pkmn_data["user"][0].name}', "assets/light_font.png")
         count = 0
         for text in name:
             self.display_surface.blit(text,((count+810),395) )
             count+=(6*4)        
         
-        name = spritesheet.font_writing(f'{self.pkmn_data['opps'][0].name}', "assets/light_font.png")
+        name = spritesheet.font_writing(f'{self.pkmn_data["opps"][0].name}', "assets/light_font.png")
         count = 0
         for text in name:
             self.display_surface.blit(text,((count+100),55) )
@@ -126,31 +134,77 @@ class Battle:
             self.display_surface.blit(text,((count+150),595) )
             count+=(6*4)
 
-        play_text = spritesheet.font_writing('Press A               Press B', 'assets/dark_font.png')
+        play_text = spritesheet.font_writing('Press A               Press R', 'assets/dark_font.png')
         count = 0
         for text in play_text:
             self.display_surface.blit(text,((count+200),640) )
             count+=(6*4)
 
-        self.hp(self.user_hp/2, self.pkmn_data['user'][0].hp, (960,450))
+        self.hp(self.user_hp, self.pkmn_data['user'][0].hp, (960,450))
         self.hp(self.opp_hp, self.pkmn_data['opps'][0].hp, (235,115))
-
 
         if keys[pygame.K_a]:
             self.fight_state = True
             self.default_state = False
-        elif keys[pygame.K_b]:
+        elif keys[pygame.K_r]:
             self.run_state = True
             self.default_state = False
 
-    def run(self):
-        del self
-    
-    def fight(self):
-        moves = []
-        for move in self.pkmn_data['user'].moves():
-            moves.append(move.name)
+    def run(self, keys):
+        battle_end, user_out, ran_away , user_won= False, False, False, False
+        if self.user_hp <= 0 or self.opp_hp <= 0 or keys[pygame.K_r]:
+            
+ 
+            self.display_surface.fill("black")
+            
+            play_text = spritesheet.font_writing("Battle Over", "assets/dark_font.png")
+            count = 0
+            for text in play_text:
+                self.display_surface.blit(text,((count+150),360) )
+                count+=(6*4)
+            
+            battle_end = True
+            if self.user_hp <=0:
+                user_out = True
+            elif keys[pygame.K_r]:
+                ran_away = True
+            elif self.opp_hp <=0:
+                user_won = True
+            
+        return battle_end, user_out, user_won,ran_away
 
+
+    def fight(self):
+
+        self.opp_hp = self.pkmn_data['user'][0].fight(self.opp_hp)
+
+        self.display_surface.blit(pygame.transform.scale(pygame.image.load('assets/battle/text_box.png'),((240 * 5.4), (48* 3))), (0,560))
+        
+        play_text = spritesheet.font_writing(f"{self.pkmn_data['user'][0].name} fought", "assets/dark_font.png")
+        count = 0
+        for text in play_text:
+            self.display_surface.blit(text,((count+150),595) )
+            count+=(6*4)
+
+        
+        self.user_turn = False
+
+    def opp_fight(self):
+
+        self.user_hp = self.pkmn_data['opps'][0].fight(self.user_hp)
+
+        self.display_surface.blit(pygame.transform.scale(pygame.image.load('assets/battle/text_box.png'),((240 * 5.4), (48* 3))), (0,560))
+        
+        play_text = spritesheet.font_writing(f"{self.pkmn_data['opps'][0].name} attacked", "assets/dark_font.png")
+        count = 0
+        for text in play_text:
+            self.display_surface.blit(text,((count+150),595) )
+            count+=(6*4)
+
+        self.user_turn = True
+        self.default_state = True
+        self.fight_state = False
+    
     def hp(self, c_health, t_health, pos):
         total_hp = t_health
         current_hp = c_health
@@ -169,5 +223,3 @@ class Battle:
         # Draw HP bar (if HP > 0)
         if current_hp > 0:
             pygame.draw.rect(self.display_surface, bg_color, (pos[0], pos[1], current_bar_width, 15))
-
-        
